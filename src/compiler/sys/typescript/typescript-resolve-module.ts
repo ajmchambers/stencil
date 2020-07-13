@@ -1,7 +1,7 @@
 import * as d from '../../../declarations';
 import { basename, dirname, isAbsolute, join, resolve } from 'path';
 import { isDtsFile, isJsFile, isJsxFile, isLocalModule, isStencilCoreImport, isTsxFile, isTsFile, isJsonFile } from '../resolve/resolve-utils';
-import { isRemoteUrl, isString, IS_BROWSER_ENV, IS_NODE_ENV, IS_WEB_WORKER_ENV, normalizePath } from '@utils';
+import { isRemoteUrl, isString, IS_BROWSER_ENV, IS_NODE_ENV, normalizePath } from '@utils';
 import { patchTsSystemFileSystem } from './typescript-sys';
 import { resolveRemoteModuleIdSync } from '../resolve/resolve-module-sync';
 import { version } from '../../../version';
@@ -179,4 +179,4 @@ const getTsResolveExtension = (p: string) => {
   return ts.Extension.Ts;
 };
 
-const shouldPatchRemoteTypeScript = (compilerExe: string) => !IS_NODE_ENV && IS_WEB_WORKER_ENV && isRemoteUrl(compilerExe);
+const shouldPatchRemoteTypeScript = (compilerExe: string) => !IS_NODE_ENV && isRemoteUrl(compilerExe);
