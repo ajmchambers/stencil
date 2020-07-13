@@ -52,7 +52,7 @@ export const run = async (init: CliInitOptions) => {
     }
 
     const coreCompiler = await loadCoreCompiler(sys);
- 
+
     if (task === 'version' || flags.version) {
       console.log(coreCompiler.version);
       return;
@@ -74,7 +74,6 @@ export const run = async (init: CliInitOptions) => {
       configPath: findConfigResults.configPath,
       logger,
       sys,
-      typescriptPath: ensureDepsResults.typescriptPath,
     });
 
     if (validated.diagnostics.length > 0) {
@@ -91,7 +90,6 @@ export const run = async (init: CliInitOptions) => {
     await sys.ensureResources({ rootDir: validated.config.rootDir, logger, dependencies });
 
     await runTask(coreCompiler, validated.config, task);
-
   } catch (e) {
     if (!shouldIgnoreError(e)) {
       logger.error(`uncaught cli error: ${e}${logger.getLevel() === 'debug' ? e.stack : ''}`);
@@ -137,7 +135,7 @@ export const runTask = async (coreCompiler: CoreCompiler, config: Config, task: 
     case 'version':
       console.log(coreCompiler.version);
       break;
-  
+
     default:
       config.logger.error(`${config.logger.emoji('❌ ')}Invalid stencil command, please see the options below:`);
       taskHelp(config.sys, config.logger);

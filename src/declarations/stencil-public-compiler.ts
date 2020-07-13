@@ -247,7 +247,6 @@ export interface StencilConfig {
   validateTypes?: boolean;
   watchIgnoredRegex?: RegExp;
   excludeUnusedDependencies?: boolean;
-  typescriptPath?: string;
   stencilCoreResolvedId?: string;
 }
 
@@ -819,6 +818,7 @@ export interface CompilerSystem {
    */
   accessSync(p: string): boolean;
   applyGlobalPatch?(fromDir: string): Promise<void>;
+  applyPrerenderGlobalPatch?(opts: { devServerHostUrl: string; window: any }): void;
   cacheStorage?: CacheStorage;
   checkVersion?: (logger: Logger, currentVersion: string) => Promise<() => void>;
   copy?(copyTasks: Required<CopyTask>[], srcDir: string): Promise<CopyResults>;
@@ -836,11 +836,7 @@ export interface CompilerSystem {
    */
   createWorkerController?(maxConcurrentWorkers: number): WorkerMainController;
   encodeToBase64(str: string): string;
-  ensureDependencies?(opts: {
-    rootDir: string;
-    logger: Logger;
-    dependencies: CompilerDependency[];
-  }): Promise<{ stencilPath: string; typescriptPath: string; diagnostics: Diagnostic[] }>;
+  ensureDependencies?(opts: { rootDir: string; logger: Logger; dependencies: CompilerDependency[] }): Promise<{ stencilPath: string; diagnostics: Diagnostic[] }>;
   ensureResources?(opts: { rootDir: string; logger: Logger; dependencies: CompilerDependency[] }): Promise<void>;
   /**
    * process.exit()
@@ -947,6 +943,7 @@ export interface CompilerSystem {
    * SYNC! Does not throw.
    */
   rmdirSync(p: string, opts?: CompilerSystemRemoveDirectoryOptions): CompilerSystemRemoveDirectoryResults;
+  setupCompiler?: (c: { ts: any }) => void;
   /**
    * Returns undefined if stat not found. Does not throw.
    */
@@ -1985,7 +1982,6 @@ export interface LoadConfigInit {
    * within the root directory.
    */
   initTsConfig?: boolean;
-  typescriptPath?: string;
 }
 
 export interface LoadConfigResults {

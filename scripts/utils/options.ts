@@ -9,6 +9,8 @@ export function getOptions(rootDir: string, inputOpts: BuildOptions = {}) {
   const packageLockJsonPath = join(rootDir, 'package-lock.json');
   const changelogPath = join(rootDir, 'CHANGELOG.md');
   const nodeModulesDir = join(rootDir, 'node_modules');
+  const typescriptDir = join(nodeModulesDir, 'typescript');
+  const typescriptLibDir = join(typescriptDir, 'lib');
   const transpiledDir = join(rootDir, 'build');
   const scriptsDir = join(rootDir, 'scripts');
   const scriptsBundlesDir = join(scriptsDir, 'bundles');
@@ -21,6 +23,8 @@ export function getOptions(rootDir: string, inputOpts: BuildOptions = {}) {
     packageLockJsonPath,
     changelogPath,
     nodeModulesDir,
+    typescriptDir,
+    typescriptLibDir,
     transpiledDir,
     scriptsDir,
     scriptsBundlesDir,
@@ -76,7 +80,7 @@ export function getOptions(rootDir: string, inputOpts: BuildOptions = {}) {
 export function createReplaceData(opts: BuildOptions) {
   const CACHE_BUSTER = 6;
 
-  const typescriptPkg = require(join(opts.nodeModulesDir, 'typescript', 'package.json'));
+  const typescriptPkg = require(join(opts.typescriptDir, 'package.json'));
   opts.typescriptVersion = typescriptPkg.version;
   const transpileId = typescriptPkg.name + typescriptPkg.version + '_' + CACHE_BUSTER;
 
@@ -120,6 +124,8 @@ export interface BuildOptions {
   rootDir?: string;
   srcDir?: string;
   nodeModulesDir?: string;
+  typescriptDir?: string;
+  typescriptLibDir?: string;
   transpiledDir?: string;
   scriptsDir?: string;
   scriptsBundlesDir?: string;

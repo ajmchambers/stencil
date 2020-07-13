@@ -35,7 +35,7 @@ export const getTranspileConfig = (input: TranspileOptions) => {
     transpileCtx.sys = input.sys;
   } else if (!transpileCtx.sys) {
     if (IS_NODE_ENV) {
-      transpileCtx.sys = requireFunc('../sys/node/index.js').createNodeSysNoWatch();
+      transpileCtx.sys = requireFunc('../sys/node/index.js').createNodeSys();
     } else if (IS_DENO_ENV) {
       throw new Error(`"sys" must be provided in options`);
     } else {
@@ -44,16 +44,16 @@ export const getTranspileConfig = (input: TranspileOptions) => {
   }
 
   const compileOpts: TranspileOptions = {
-    componentExport: getCompileConfigOpt(input.componentExport, VALID_EXPORT, 'customelement'),
-    componentMetadata: getCompileConfigOpt(input.componentMetadata, VALID_METADATA, null),
+    componentExport: getTranspileConfigOpt(input.componentExport, VALID_EXPORT, 'customelement'),
+    componentMetadata: getTranspileConfigOpt(input.componentMetadata, VALID_METADATA, null),
     coreImportPath: isString(input.coreImportPath) ? input.coreImportPath : STENCIL_INTERNAL_CLIENT_ID,
     currentDirectory: isString(input.currentDirectory) ? input.currentDirectory : transpileCtx.sys.getCurrentDirectory(),
     file: input.file,
-    proxy: getCompileConfigOpt(input.proxy, VALID_PROXY, 'defineproperty'),
-    module: getCompileConfigOpt(input.module, VALID_MODULE, 'esm'),
+    proxy: getTranspileConfigOpt(input.proxy, VALID_PROXY, 'defineproperty'),
+    module: getTranspileConfigOpt(input.module, VALID_MODULE, 'esm'),
     sourceMap: input.sourceMap === 'inline' ? 'inline' : input.sourceMap !== false,
-    style: getCompileConfigOpt(input.style, VALID_STYLE, 'static'),
-    target: getCompileConfigOpt(input.target || (input as any).script /* deprecated */, VALID_TARGET, 'latest'),
+    style: getTranspileConfigOpt(input.style, VALID_STYLE, 'static'),
+    target: getTranspileConfigOpt(input.target || (input as any).script /* deprecated */, VALID_TARGET, 'latest'),
     typescriptPath: input.typescriptPath,
   };
 
@@ -145,7 +145,7 @@ export const getTranspileCssConfig = (compileOpts: TranspileOptions, importData:
   return transformInput;
 };
 
-const getCompileConfigOpt = (value: any, validValues: Set<string>, defaultValue: string) => {
+const getTranspileConfigOpt = (value: any, validValues: Set<string>, defaultValue: string) => {
   if (value === null || value === 'null') {
     return null;
   }
