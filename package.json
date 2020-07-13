@@ -22,7 +22,7 @@
   "scripts": {
     "start": "npm run watch",
     "build": "node scripts && npm run tsc.prod && npm run rollup.prod.ci",
-    "build.prod": "node scripts && npm run tsc.scripts && npm run tsc.prod && npm run rollup.prod",
+    "build.prod": "node scripts && npm run tsc.scripts && npm run tsc.prod && npm run rollup.prod.ci && npm run compress",
     "watch": "node scripts && npm run tsc && concurrently \"npm run rollup.watch\" \"npm run tsc.watch\"",
     "compress.prepare": "node scripts/build/compress/prepare.js",
     "compress.closure": "java -jar node_modules/google-closure-compiler-java/compiler.jar --flagfile=scripts/compress/flags",

@@ -120,6 +120,10 @@ export function runReleaseTasks(opts: BuildOptions, args: string[]) {
         task: () => bundleBuild(opts),
       },
       {
+        title: `Compress compiler`,
+        task: () => execa('npm', ['run', 'compress'], { cwd: rootDir }),
+      },
+      {
         title: 'Run jest tests',
         task: () => execa('npm', ['run', 'test.jest'], { cwd: rootDir }),
       },

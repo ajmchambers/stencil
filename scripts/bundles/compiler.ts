@@ -15,6 +15,7 @@ import { writePkgJson } from '../utils/write-pkg-json';
 import { BuildOptions } from '../utils/options';
 import { RollupOptions } from 'rollup';
 import { typescriptSourcePlugin } from './plugins/typescript-source-plugin';
+import { prettyMinifyPlugin } from './plugins/pretty-minify';
 
 export async function compiler(opts: BuildOptions) {
   const inputDir = join(opts.transpiledDir, 'compiler');
@@ -107,6 +108,7 @@ export async function compiler(opts: BuildOptions) {
         preferConst: true,
       }),
       moduleDebugPlugin(opts),
+      prettyMinifyPlugin(opts),
     ],
     treeshake: {
       moduleSideEffects: false,

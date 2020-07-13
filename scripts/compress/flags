@@ -1,8 +1,8 @@
 --js
-compiler/stencil.min.js
+build/stencil.terser.min.js
 
 --js_output_file
-compiler/stencil.closure.js
+compiler/stencil.min.js
 
 --language_in
 ECMASCRIPT_2018
