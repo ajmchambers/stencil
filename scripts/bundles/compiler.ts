@@ -47,7 +47,7 @@ export async function compiler(opts: BuildOptions) {
       intro: cjsIntro,
       outro: cjsOutro,
       strict: false,
-      banner: getBanner(opts, 'Stencil Compiler', true),
+      banner: getBanner(opts, `Stencil Compiler`, true),
       esModule: false,
       preferConst: true,
       freeze: false,
@@ -131,7 +131,7 @@ function minifyCompiler(opts: BuildOptions): Plugin {
   if (opts.isProd) {
     return {
       name: 'minifyCompiler',
-      generateBundle(_, bundles) {
+      generateBundle(opts, bundles) {
         Object.keys(bundles).forEach(fileName => {
           const b = bundles[fileName] as OutputChunk;
           if (typeof b.code === 'string') {
@@ -154,7 +154,7 @@ function minifyCompiler(opts: BuildOptions): Plugin {
             if (minifyResults.error) {
               throw minifyResults.error;
             }
-            b.code = minifyResults.code;
+            b.code = opts.banner() + '\n' + minifyResults.code;
           }
         });
       },

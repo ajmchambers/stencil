@@ -5,7 +5,6 @@ import { BuildOptions } from '../../utils/options';
 import rollupCommonjs from '@rollup/plugin-commonjs';
 import rollupResolve from '@rollup/plugin-node-resolve';
 import { rollup, OutputChunk, Plugin } from 'rollup';
-import terser from 'terser';
 
 export function parse5Plugin(opts: BuildOptions): Plugin {
   return {
