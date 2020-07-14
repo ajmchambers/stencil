@@ -25,6 +25,33 @@ var VALIDATION_ERROR = {};
 var EXTERNAL_SYNTHETIC_EXPORTS = {};
 var SYNTHETIC_NAMED_EXPORTS_NEED_DEFAULT = {};
 
+var PUBLIC_COMPILER_API = {
+  buildId: {},
+  compile: {},
+  compileSync: {},
+  createCompiler: {},
+  createPrerenderer: {},
+  createSystem: {},
+  createWorkerContext: {},
+  createWorkerMessageHandler: {},
+  dependencies: {},
+  loadConfig: {},
+  optimizeCss: {},
+  optimizeJs: {},
+  path: {},
+  transpile: {},
+  transpileSync: {},
+  vermoji: {},
+  version: {},
+  versions: {},
+};
+
+var NODE_API = {
+  require: {},
+  exports: {},
+  module: {},
+  _compile: {}
+};
 
 var RESERVED_NAMES = {
   await: {},

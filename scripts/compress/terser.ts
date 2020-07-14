@@ -27,6 +27,7 @@ const results = minify(code, {
     comments: false,
     keep_quoted_props: true,
   },
+  sourceMap: false,
 });
 
 fs.writeFileSync(compilerOutputPath, results.code);

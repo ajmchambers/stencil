@@ -16,7 +16,7 @@ function getExterns(dtsFile: string) {
 function convertDecoratorsToStatic(): ts.TransformerFactory<ts.SourceFile> {
   return transformCtx => {
     const visit = (node: ts.Node): ts.VisitResult<ts.Node> => {
-      if (ts.isPropertySignature(node) || ts.isMethodSignature(node) || ts.isPropertyDeclaration(node) || ts.isMethodDeclaration(node)) {
+      if (ts.isPropertySignature(node) || ts.isMethodSignature(node) || ts.isPropertyDeclaration(node) || ts.isMethodDeclaration(node) || ts.isEnumMember(node)) {
         const propName = (node.name as ts.Identifier).text;
         if (typeof propName === 'string' && propName.length > 0) {
           props.add((node.name as ts.Identifier).text);
@@ -49,9 +49,12 @@ function getDirectoryDts(dir) {
 const props = new Set<string>();
 const externs = [fs.readFileSync(join(rootDir, 'scripts', 'compress', 'externs'), 'utf8')];
 
+getExterns(join(rootDir, 'compiler', 'stencil.d.ts'));
 getExterns(join(rootDir, 'internal', 'stencil-public-compiler.d.ts'));
 getExterns(join(rootDir, 'internal', 'stencil-public-docs.d.ts'));
 getExterns(join(rootDir, 'internal', 'stencil-public-runtime.d.ts'));
+
+getExterns(join(rootDir, 'node_modules', 'typescript', 'lib', 'typescript.d.ts'));
 
 getDirectoryDts(join(rootDir, 'node_modules', '@types', 'autoprefixer'));
 getDirectoryDts(join(rootDir, 'node_modules', '@types', 'graceful-fs'));

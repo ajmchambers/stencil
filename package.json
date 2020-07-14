@@ -26,7 +26,7 @@
     "watch": "node scripts && npm run tsc && concurrently \"npm run rollup.watch\" \"npm run tsc.watch\"",
     "compress.prepare": "node scripts/build/compress/prepare.js",
     "compress.closure": "java -jar node_modules/google-closure-compiler-java/compiler.jar --flagfile=scripts/compress/flags",
-    "compress.closure.debug": "java -jar node_modules/google-closure-compiler-java/compiler.jar --flagfile=scripts/compress/flags  --debug --formatting=PRETTY_PRINT",
+    "compress.closure.debug": "java -jar node_modules/google-closure-compiler-java/compiler.jar --flagfile=scripts/compress/flags.debug",
     "compress.terser": "node scripts/build/compress/terser.js",
     "compress": "npm run compress.prepare && npm run compress.terser && npm run compress.closure",
     "release": "node scripts --release --publish",
