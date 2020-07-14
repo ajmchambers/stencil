@@ -22,6 +22,7 @@ export class AppRoot {
   target: HTMLSelectElement;
   sourceMap: HTMLSelectElement;
   style: HTMLSelectElement;
+  styleImportData: HTMLSelectElement;
   componentExport: HTMLSelectElement;
   coreImportPath: HTMLSelectElement;
   build: HTMLSelectElement;
@@ -67,6 +68,7 @@ export class AppRoot {
       target: this.target.value,
       sourceMap: this.sourceMap.value === 'true' ? true : this.sourceMap.value === 'inline' ? 'inline' : false,
       style: this.style.value,
+      styleImportData: this.styleImportData.value,
     };
 
     const start = Date.now();
@@ -282,6 +284,13 @@ export class AppRoot {
               <span>Style:</span>
               <select ref={el => (this.style = el)} onInput={this.compile.bind(this)}>
                 <option value="static">static</option>
+                <option value="null">null</option>
+              </select>
+            </label>
+            <label>
+              <span>Style Import Data:</span>
+              <select ref={el => (this.styleImportData = el)} onInput={this.compile.bind(this)}>
+                <option value="queryparams">queryparams</option>
                 <option value="null">null</option>
               </select>
             </label>
