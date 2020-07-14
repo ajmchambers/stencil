@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import { join, basename } from 'path';
+import { join } from 'path';
 import rollupCommonjs from '@rollup/plugin-commonjs';
 import rollupJson from '@rollup/plugin-json';
 import rollupNodeResolve from '@rollup/plugin-node-resolve';
@@ -13,9 +13,9 @@ import { sizzlePlugin } from './plugins/sizzle-plugin';
 import { sysModulesPlugin } from './plugins/sys-modules-plugin';
 import { writePkgJson } from '../utils/write-pkg-json';
 import { BuildOptions } from '../utils/options';
-import { RollupOptions } from 'rollup';
+import { OutputChunk, Plugin, RollupOptions } from 'rollup';
 import { typescriptSourcePlugin } from './plugins/typescript-source-plugin';
-import { prettyMinifyPlugin } from './plugins/pretty-minify';
+import terser from 'terser';
 
 export async function compiler(opts: BuildOptions) {
   const inputDir = join(opts.transpiledDir, 'compiler');
@@ -108,7 +108,7 @@ export async function compiler(opts: BuildOptions) {
         preferConst: true,
       }),
       moduleDebugPlugin(opts),
-      prettyMinifyPlugin(opts),
+      minifyCompiler(opts),
     ],
     treeshake: {
       moduleSideEffects: false,
@@ -125,4 +125,39 @@ export async function compiler(opts: BuildOptions) {
   await Promise.all(dtsFiles.map(f => fs.copy(join(opts.typescriptLibDir, f), join(opts.output.compilerDir, f))));
 
   return [compilerBundle];
+}
+
+function minifyCompiler(opts: BuildOptions): Plugin {
+  if (opts.isProd) {
+    return {
+      name: 'minifyCompiler',
+      generateBundle(_, bundles) {
+        Object.keys(bundles).forEach(fileName => {
+          const b = bundles[fileName] as OutputChunk;
+          if (typeof b.code === 'string') {
+            const minifyResults = terser.minify(b.code, {
+              parse: {
+                ecma: 2018,
+              },
+              compress: {
+                ecma: 2018,
+                passes: 2,
+                side_effects: false,
+                unsafe_arrows: true,
+                unsafe_methods: true,
+              },
+              output: {
+                ecma: 2018,
+                comments: false,
+              },
+            });
+            if (minifyResults.error) {
+              throw minifyResults.error;
+            }
+            b.code = minifyResults.code;
+          }
+        });
+      },
+    };
+  }
 }
