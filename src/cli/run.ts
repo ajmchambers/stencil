@@ -18,7 +18,7 @@ export const run = async (init: CliInitOptions) => {
   const { args, logger, sys } = init;
 
   try {
-    const flags = parseFlags(sys, args);
+    const flags = parseFlags(args, sys);
     const task = flags.task;
     if (flags.debug || flags.verbose) {
       logger.setLevel('debug');
