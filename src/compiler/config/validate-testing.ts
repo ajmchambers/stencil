@@ -1,6 +1,7 @@
 import * as d from '../../declarations';
-import { buildError, buildWarn } from '@utils';
-import { isAbsolute, join } from 'path';
+import { buildError, buildWarn, isString } from '@utils';
+import { isAbsolute, join, basename, dirname } from 'path';
+import { isLocalModule } from '../sys/resolve/resolve-utils';
 import { isOutputTargetDist, isOutputTargetWww } from '../output-targets/output-utils';
 
 export const validateTesting = (config: d.Config, diagnostics: d.Diagnostic[]) => {
@@ -8,6 +9,15 @@ export const validateTesting = (config: d.Config, diagnostics: d.Diagnostic[]) =
 
   if (!config.flags || (!config.flags.e2e && !config.flags.spec)) {
     return;
+  }
+
+  let configPathDir = config.configPath;
+  if (isString(configPathDir)) {
+    if (basename(configPathDir).includes('.')) {
+      configPathDir = dirname(configPathDir);
+    }
+  } else {
+    configPathDir = config.rootDir;
   }
 
   if (typeof config.flags.headless === 'boolean') {
@@ -66,7 +76,7 @@ export const validateTesting = (config: d.Config, diagnostics: d.Diagnostic[]) =
   if (typeof testing.preset !== 'string') {
     testing.preset = join(config.sys.getCompilerExecutingPath(), '..', '..', 'testing');
   } else if (!isAbsolute(testing.preset)) {
-    testing.preset = join(config.configPath, testing.preset);
+    testing.preset = join(configPathDir, testing.preset);
   }
 
   if (!Array.isArray(testing.setupFilesAfterEnv)) {
@@ -79,9 +89,9 @@ export const validateTesting = (config: d.Config, diagnostics: d.Diagnostic[]) =
     err.messageText = `setupTestFrameworkScriptFile has been deprecated.`;
   }
 
-  if (typeof testing.testEnvironment === 'string') {
-    if (!isAbsolute(testing.testEnvironment)) {
-      testing.testEnvironment = join(config.configPath, testing.testEnvironment);
+  if (isString(testing.testEnvironment)) {
+    if (!isAbsolute(testing.testEnvironment) && isLocalModule(testing.testEnvironment)) {
+      testing.testEnvironment = join(configPathDir, testing.testEnvironment);
     }
   }
 
