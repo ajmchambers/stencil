@@ -439,7 +439,7 @@ export function createNodeSys(c: { process?: any } = {}) {
     },
     copy: nodeCopyTasks,
     details: {
-      cpuModel: sysCpus[0].model,
+      cpuModel: (Array.isArray(sysCpus) && sysCpus.length > 0 ? sysCpus[0] && sysCpus[0].model : '') || '',
       freemem() {
         return freemem();
       },
