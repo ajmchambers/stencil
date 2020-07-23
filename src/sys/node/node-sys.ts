@@ -15,7 +15,7 @@ import fs from 'graceful-fs';
 import { NodeLazyRequire } from './node-lazy-require';
 import { NodeResolveModule } from './node-resolve-module';
 import { NodeWorkerController } from './node-worker-controller';
-import { normalizePath } from '@utils';
+import { normalizePath, isFunction } from '@utils';
 import path from 'path';
 import type TypeScript from 'typescript';
 
@@ -204,8 +204,10 @@ export function createNodeSys(c: { process?: any } = {}) {
     },
     nextTick: prcs.nextTick,
     normalizePath,
-    onProcessInterrupt(cb) {
-      onInterruptsCallbacks.push(cb);
+    onProcessInterrupt: cb => {
+      if (!onInterruptsCallbacks.includes(cb)) {
+        onInterruptsCallbacks.push(cb);
+      }
     },
     platformPath: path,
     readdir(p) {
@@ -460,6 +462,19 @@ export function createNodeSys(c: { process?: any } = {}) {
     'puppeteer': ['1.19.0', '2.1.1'],
     'puppeteer-core': ['1.19.0', '2.1.1'],
     'workbox-build': ['4.3.1', '4.3.1'],
+  });
+
+  prcs.on('SIGINT', () => {
+    while (true) {
+      const cb = onInterruptsCallbacks.pop();
+      if (isFunction(cb)) {
+        try {
+          cb();
+        } catch (e) {}
+      } else {
+        break;
+      }
+    }
   });
 
   return sys;

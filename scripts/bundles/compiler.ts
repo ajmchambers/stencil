@@ -18,7 +18,7 @@ import { typescriptSourcePlugin } from './plugins/typescript-source-plugin';
 import terser from 'terser';
 
 export async function compiler(opts: BuildOptions) {
-  const inputDir = join(opts.transpiledDir, 'compiler');
+  const inputDir = join(opts.buildDir, 'compiler');
 
   const compilerFileName = 'stencil.js';
   const compilerDtsName = compilerFileName.replace('.js', '.d.ts');
@@ -59,7 +59,7 @@ export async function compiler(opts: BuildOptions) {
         name: 'compilerMockDocResolvePlugin',
         resolveId(id) {
           if (id === '@stencil/core/mock-doc') {
-            return join(opts.transpiledDir, 'mock-doc', 'index.js');
+            return join(opts.buildDir, 'mock-doc', 'index.js');
           }
           if (id === '@microsoft/typescript-etw' || id === 'inspector') {
             return id;

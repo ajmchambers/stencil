@@ -11,12 +11,14 @@ export function getOptions(rootDir: string, inputOpts: BuildOptions = {}) {
   const nodeModulesDir = join(rootDir, 'node_modules');
   const typescriptDir = join(nodeModulesDir, 'typescript');
   const typescriptLibDir = join(typescriptDir, 'lib');
-  const transpiledDir = join(rootDir, 'build');
+  const buildDir = join(rootDir, 'build');
   const scriptsDir = join(rootDir, 'scripts');
   const scriptsBundlesDir = join(scriptsDir, 'bundles');
   const bundleHelpersDir = join(scriptsBundlesDir, 'helpers');
 
   const opts: BuildOptions = {
+    ghRepoOrg: 'ionic-team',
+    ghRepoName: 'stencil',
     rootDir,
     srcDir,
     packageJsonPath,
@@ -25,7 +27,7 @@ export function getOptions(rootDir: string, inputOpts: BuildOptions = {}) {
     nodeModulesDir,
     typescriptDir,
     typescriptLibDir,
-    transpiledDir,
+    buildDir,
     scriptsDir,
     scriptsBundlesDir,
     bundleHelpersDir,
@@ -121,12 +123,14 @@ export function createReplaceData(opts: BuildOptions) {
 }
 
 export interface BuildOptions {
+  ghRepoOrg?: string;
+  ghRepoName?: string;
   rootDir?: string;
   srcDir?: string;
   nodeModulesDir?: string;
   typescriptDir?: string;
   typescriptLibDir?: string;
-  transpiledDir?: string;
+  buildDir?: string;
   scriptsDir?: string;
   scriptsBundlesDir?: string;
   bundleHelpersDir?: string;

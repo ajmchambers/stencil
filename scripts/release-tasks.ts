@@ -3,7 +3,7 @@ import color from 'ansi-colors';
 import execa from 'execa';
 import Listr, { ListrTask } from 'listr';
 import { BuildOptions } from './utils/options';
-import { isValidVersionInput, SEMVER_INCREMENTS, isVersionGreater, isPrereleaseVersion } from './utils/release-utils';
+import { isValidVersionInput, SEMVER_INCREMENTS, isVersionGreater, isPrereleaseVersion, updateChangeLog, postGithubRelease } from './utils/release-utils';
 import { validateBuild } from './test/validate-build';
 import { createLicense } from './license';
 import { bundleBuild } from './build';
@@ -153,12 +153,8 @@ export function runReleaseTasks(opts: BuildOptions, args: string[]) {
       },
       {
         title: `Generate ${opts.version} Changelog ${opts.vermoji}`,
-        task: async () => {
-          await execa('npm', ['run', 'changelog'], { cwd: rootDir });
-
-          let changelog = fs.readFileSync(opts.changelogPath, 'utf8');
-          changelog = changelog.replace(/\# \[/, '# ' + opts.vermoji + ' [');
-          fs.writeFileSync(opts.changelogPath, changelog);
+        task: () => {
+          return updateChangeLog(opts);
         },
       },
     );
@@ -230,6 +226,15 @@ export function runReleaseTasks(opts: BuildOptions, args: string[]) {
         },
       });
     }
+  }
+
+  if (opts.isPublishRelease) {
+    tasks.push({
+      title: 'Create Github Release',
+      task: () => {
+        return postGithubRelease(opts);
+      },
+    });
   }
 
   const listr = new Listr(tasks);
