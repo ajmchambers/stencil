@@ -5,6 +5,7 @@ import { BuildOptions } from '../../utils/options';
 import rollupCommonjs from '@rollup/plugin-commonjs';
 import rollupResolve from '@rollup/plugin-node-resolve';
 import { rollup, OutputChunk, Plugin } from 'rollup';
+import terser from 'terser';
 
 export function parse5Plugin(opts: BuildOptions): Plugin {
   return {
@@ -66,17 +67,19 @@ async function bundleParse5(opts: BuildOptions) {
 
   const { output } = await rollupBuild.generate({
     format: 'iife',
-    name: 'EXPORT_PARSE5',
-    footer: [
-      'export const parse = EXPORT_PARSE5.parse;',
-      'export const parseFragment = EXPORT_PARSE5.parseFragment;'
-    ].join('\n'),
-    preferConst: true
+    name: 'PARSE5',
+    footer: ['export const parse = PARSE5.parse;', 'export const parseFragment = PARSE5.parseFragment;'].join('\n'),
+    preferConst: true,
+    strict: false,
   });
 
-  const code = output[0].code;
+  const minified = terser.minify(output[0].code);
 
-  await fs.writeFile(cacheFile, code);
+  if (minified.error) {
+    throw minified.error;
+  }
 
-  return code;
+  await fs.writeFile(cacheFile, minified.code);
+
+  return minified.code;
 }

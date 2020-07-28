@@ -12,6 +12,8 @@ export const IS_NODE_ENV =
 
 export const OS_PLATFORM = IS_NODE_ENV ? global.process.platform : IS_DENO_ENV ? (globalThis as any).Deno.build.os : '';
 
+export const IS_DENO_WINDOWS_ENV = IS_DENO_ENV && Deno.build.os === 'windows';
+
 export const IS_WINDOWS_ENV = OS_PLATFORM === 'win32' || OS_PLATFORM === 'windows';
 
 export const IS_CASE_SENSITIVE_FILE_NAMES = !IS_WINDOWS_ENV;
