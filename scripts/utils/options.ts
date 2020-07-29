@@ -99,6 +99,9 @@ export function createReplaceData(opts: BuildOptions) {
 
   const optimizeCssId = autoprefixerPkg.name + autoprefixerPkg.version + '_' + postcssPkg.name + postcssPkg.version + '_' + CACHE_BUSTER;
 
+  const parse5Pkg = require(join(opts.nodeModulesDir, 'parse5', 'package.json'));
+  opts.parse5Verion = parse5Pkg.version;
+
   const data = readJSONSync(join(opts.srcDir, 'compiler', 'sys', 'dependencies.json'));
   data.dependencies[0].version = opts.version;
   data.dependencies[1].version = typescriptPkg.version;
@@ -160,6 +163,7 @@ export interface BuildOptions {
   tag?: string;
   typescriptVersion?: string;
   rollupVersion?: string;
+  parse5Verion?: string;
   terserVersion?: string;
 }
 

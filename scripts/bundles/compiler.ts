@@ -54,7 +54,7 @@ export async function compiler(opts: BuildOptions) {
       sourcemap: false,
     },
     plugins: [
-      typescriptSourcePlugin(),
+      typescriptSourcePlugin(opts),
       {
         name: 'compilerMockDocResolvePlugin',
         resolveId(id) {

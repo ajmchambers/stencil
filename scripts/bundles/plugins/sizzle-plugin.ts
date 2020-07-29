@@ -16,7 +16,7 @@ export function sizzlePlugin(opts: BuildOptions): Plugin {
       if (id !== 'sizzle') {
         return null;
       }
-      const f = 'sizzle.js';
+      const f = opts.isProd ? 'sizzle.min.js' : 'sizzle.js';
       const sizzlePath = join(opts.nodeModulesDir, 'sizzle', 'dist', f);
       const sizzleContent = await fs.readFile(sizzlePath, 'utf8');
       return getSizzleBundle(sizzleContent);
