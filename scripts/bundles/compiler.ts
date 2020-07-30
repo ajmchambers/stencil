@@ -13,7 +13,7 @@ import { sizzlePlugin } from './plugins/sizzle-plugin';
 import { sysModulesPlugin } from './plugins/sys-modules-plugin';
 import { writePkgJson } from '../utils/write-pkg-json';
 import { BuildOptions } from '../utils/options';
-import { OutputChunk, Plugin, RollupOptions } from 'rollup';
+import { RollupOptions, OutputChunk } from 'rollup';
 import { typescriptSourcePlugin } from './plugins/typescript-source-plugin';
 import terser from 'terser';
 
@@ -108,12 +108,28 @@ export async function compiler(opts: BuildOptions) {
         preferConst: true,
       }),
       moduleDebugPlugin(opts),
-      minifyCompiler(opts),
+      {
+        name: 'compilerMinify',
+        async generateBundle(_, bundleFiles) {
+          if (opts.isProd) {
+            const compilerFilename = Object.keys(bundleFiles).find(f => f.includes('stencil'));
+            const compilerBundle = bundleFiles[compilerFilename] as OutputChunk;
+            const minified = minifyStencilCompiler(compilerBundle.code, opts);
+            await fs.writeFile(join(opts.output.compilerDir, compilerFilename.replace('.js', '.min.js')), minified);
+          }
+        },
+      },
     ],
     treeshake: {
       moduleSideEffects: false,
       propertyReadSideEffects: false,
       unknownGlobalSideEffects: false,
+    },
+    onwarn(warning) {
+      if (warning.code === `THIS_IS_UNDEFINED`) {
+        return;
+      }
+      console.warn(warning.message || warning);
     },
   };
 
@@ -127,37 +143,29 @@ export async function compiler(opts: BuildOptions) {
   return [compilerBundle];
 }
 
-function minifyCompiler(opts: BuildOptions): Plugin {
-  if (opts.isProd) {
-    return {
-      name: 'minifyCompiler',
-      generateBundle(opts, bundles) {
-        Object.keys(bundles).forEach(fileName => {
-          const b = bundles[fileName] as OutputChunk;
-          if (typeof b.code === 'string') {
-            const minifyResults = terser.minify(b.code, {
-              parse: {
-                ecma: 2018,
-              },
-              compress: {
-                ecma: 2018,
-                passes: 2,
-                side_effects: false,
-                unsafe_arrows: true,
-                unsafe_methods: true,
-              },
-              output: {
-                ecma: 2018,
-                comments: false,
-              },
-            });
-            if (minifyResults.error) {
-              throw minifyResults.error;
-            }
-            b.code = opts.banner() + '\n' + minifyResults.code;
-          }
-        });
-      },
-    };
+function minifyStencilCompiler(code: string, opts: BuildOptions) {
+  const minifyOpts: terser.MinifyOptions = {
+    ecma: 2018,
+    compress: {
+      ecma: 2018,
+      passes: 2,
+      side_effects: false,
+      unsafe_arrows: true,
+      unsafe_methods: true,
+    },
+    output: {
+      ecma: 2018,
+      comments: false,
+    },
+  };
+
+  const results = terser.minify(code, minifyOpts);
+
+  if (results.error) {
+    throw results.error;
   }
+
+  code = getBanner(opts, `Stencil Compiler`, true) + '\n' + results.code;
+
+  return code;
 }

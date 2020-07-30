@@ -61,16 +61,30 @@ async function bundleTypeScriptSource(tsPath: string, opts: BuildOptions) {
   code = code.replace(/ \|\| \(ts \= \{\}\)/g, '');
 
   // make a nice clean default export
-  code = `const ts = {};\n${code}\n;export default ts;`;
-
   // "process.browser" is used by typescript to know if it should use the node sys or not
   // this ensures its using our checks. Deno should also use process.browser = true
   // because we don't want deno using the node apis
-  code = `import { IS_NODE_ENV } from '@utils';\n` + code;
-  code = `process.browser = !IS_NODE_ENV;\n` + code;
+  const o: string[] = [];
+  o.push(`import { IS_NODE_ENV } from '@utils';`);
+  o.push(`process.browser = !IS_NODE_ENV;`);
+  o.push(`const ts = {};`);
+  o.push(code);
+  o.push(`export default ts;`);
+  code = o.join('\n');
 
   if (opts.isProd) {
-    const minified = terser.minify(code);
+    const minified = terser.minify(code, {
+      ecma: 2018,
+      module: true,
+      compress: {
+        ecma: 2018,
+        passes: 2,
+      },
+      output: {
+        ecma: 2018,
+        comments: false,
+      },
+    });
 
     if (minified.error) {
       throw minified.error;
